@@ -1,0 +1,6 @@
+= Synopsis
+Playground for Google Drive
+
+= License 
+Apache (see LICENSE)
+
