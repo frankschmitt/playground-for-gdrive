@@ -1,4 +1,4 @@
-use drive_v3::Credentials;
+use drive_v3::{Credentials, Drive};
 
 use std::io::{BufRead, BufReader};
 use std::fmt;
@@ -50,7 +50,25 @@ fn refresh_credentials() -> Result<Credentials, drive_v3::Error> {
     return Ok(stored_credentials);
 }
 
+fn list_files(credentials: Credentials) -> Result<(), drive_v3::Error> {
+    let drive = Drive::new(&credentials);
+
+    let file_list = drive.files.list()
+        .fields("files(name, id, mimeType)") // Set what fields will be returned
+        // .q("name = 'file_im_looking_for' and not trashed") // search for specific files
+        .q("name != 'file_i_want_to_ignore' and not trashed") // search for specific files
+        .execute()?;
+
+    if let Some(files) = file_list.files {
+        for file in &files {
+            println!("{}", file);
+        }
+    }
+    return Ok(());
+}
+
 fn main() {
     println!("Hello, world!");
-    init_gdrive_v3();
+    let credentials = init_gdrive_v3();
+    list_files(credentials.unwrap());
 }
